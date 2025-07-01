@@ -57,6 +57,8 @@ htmlcov/
 .dmypy.json
 dmypy.json
 
+gemini_env/
+
 
 
 
