@@ -531,15 +531,6 @@ def health_check():
             'timestamp': datetime.now().isoformat()
         }), 500
 
-if __name__ == '__main__':
-    config = get_config()
-    print(f"🚀 Iniciando Sistema de Biblioteca EAJ Macaíba")
-    print(f"📊 Dashboard: http://{config.HOST}:{config.PORT}")
-    print(f"🔧 Modo: {'Desenvolvimento' if config.DEBUG else 'Produção'}")
-    print(f"📁 Dados: {config.get_data_path()}")
-    
-    app.run(
-        debug=config.DEBUG, 
-        host=config.HOST, 
-        port=config.PORT
-    ) 
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port) 
