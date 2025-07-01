@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Explorador do Acervo - Biblioteca</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f0f2f5; /* Fundo mais suave */
+        }
+        .card {
+            border: none;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            background-color: #fff;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+        }
+        header {
+            margin-bottom: 2rem;
+            background: linear-gradient(90deg, #0056b3 0%, #007bff 100%);
+        }
+        .stat-card .card-body { padding: 1.5rem; }
+        .stat-card .card-title { font-size: 2.25rem; font-weight: 700; color: #343a40; }
+        .stat-card .card-text { color: #6c757d; font-weight: 500; text-transform: uppercase; font-size: 0.9rem;}
+        .section-card { padding: 2rem; }
+        .tip-card {
+            background-color: #fff;
+            border-left: 5px solid #007bff;
+        }
+        footer { border-top: 1px solid #dee2e6; background-color: #fff; }
+    </style>
+</head>
+<body>
+    <header class="text-white text-center py-4 shadow-sm">
+        <h1><i class="fas fa-compass me-2"></i>Explorador do Acervo</h1>
+        <p class="lead mb-0">Navegue, descubra e inspire-se com os dados da nossa biblioteca.</p>
+    </header>
+
+    <main class="container mt-5">
+        <!-- Tabs de Navegação -->
+        <section class="mb-5">
+            <div class="card section-card">
+                <ul class="nav nav-tabs" id="mainTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="search-tab" data-bs-toggle="tab" data-bs-target="#search-panel" type="button" role="tab">
+                            <i class="fas fa-search me-2"></i>Buscar Livros
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="recommendations-tab" data-bs-toggle="tab" data-bs-target="#recommendations-panel" type="button" role="tab">
+                            <i class="fas fa-book-open me-2"></i>Recomendações de Livros
+                        </button>
+                    </li>
+                </ul>
+                
+                <div class="tab-content" id="mainTabsContent">
+                    <!-- Painel de Busca -->
+                    <div class="tab-pane fade show active" id="search-panel" role="tabpanel">
+                        <div class="p-4">
+                            <h2 class="text-center mb-4"><i class="fas fa-search me-2"></i>Pesquisar Livros</h2>
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <div class="input-group mb-3">
+                                        <span class="input-group-text"><i class="fas fa-book"></i></span>
+                                        <input type="text" class="form-control" id="searchInput" placeholder="Digite o título, autor ou assunto do livro...">
+                                        <button class="btn btn-primary" type="button" id="searchBtn">
+                                            <i class="fas fa-search me-1"></i>Pesquisar
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <select class="form-select" id="categoryFilter">
+                                        <option value="all">Todas as categorias</option>
+                                        <option value="ciencia">Ciências</option>
+                                        <option value="engenharia">Engenharia</option>
+                                        <option value="software">Computação</option>
+                                        <option value="humanas">Humanas</option>
+                                        <option value="gestao">Gestão</option>
+                                        <option value="naturais">Naturais</option>
+                                        <option value="saude">Saúde</option>
+                                        <option value="outros">Outros</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="text-center">
+                                <button class="btn btn-outline-secondary" type="button" id="showAllBtn">
+                                    <i class="fas fa-list me-1"></i>Ver Todos os Livros
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Painel de Recomendações AI -->
+                    <div class="tab-pane fade" id="recommendations-panel" role="tabpanel">
+                        <div class="p-4">
+                            <h2 class="text-center mb-4"><i class="fas fa-book-open me-2"></i>Recomendações de Livros e Recursos</h2>
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <div class="input-group mb-3">
+                                        <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                        <input type="text" class="form-control" id="topicInput" placeholder="Digite um tópico que você quer aprender (ex: programação Python, biologia molecular, engenharia civil)...">
+                                        <button class="btn btn-success" type="button" id="recommendBtn">
+                                            <i class="fas fa-magic me-1"></i>Obter Recomendações
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <select class="form-select" id="numRecommendations">
+                                        <option value="3">3 recomendações</option>
+                                        <option value="5" selected>5 recomendações</option>
+                                        <option value="7">7 recomendações</option>
+                                        <option value="10">10 recomendações</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="alert alert-info" role="alert">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <strong>Como funciona:</strong> Digite um tópico e receba recomendações de livros da biblioteca + recursos adicionais do GitHub para complementar seu aprendizado.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Seção de Resultados -->
+        <section class="mb-5" id="resultsSection" style="display: none;">
+            <div class="card section-card">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h3 id="resultsTitle">Resultados da Pesquisa</h3>
+                    <span class="badge bg-primary" id="resultsCount">0 livros</span>
+                </div>
+                <div id="loadingSpinner" class="text-center py-4" style="display: none;">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Carregando...</span>
+                    </div>
+                    <p class="mt-2">Carregando livros...</p>
+                </div>
+                <div id="booksList" class="row"></div>
+                <div id="pagination" class="d-flex justify-content-center mt-4"></div>
+            </div>
+        </section>
+
+        <!-- Seção de Recomendações AI -->
+        <section class="mb-5" id="recommendationsSection" style="display: none;">
+            <div class="card section-card">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h3 id="recommendationsTitle">Recomendações de Livros</h3>
+                    <span class="badge bg-success" id="recommendationsCount">0 recomendações</span>
+                </div>
+                <div id="aiLoadingSpinner" class="text-center py-4" style="display: none;">
+                    <div class="spinner-border text-success" role="status">
+                        <span class="visually-hidden">Buscando...</span>
+                    </div>
+                    <p class="mt-2">Buscando livros e recursos de aprendizado...</p>
+                </div>
+                <div id="recommendationsList"></div>
+            </div>
+        </section>
+
+        <!-- Seção de Boas-vindas -->
+        <section class="mb-5 text-center" id="welcomeSection">
+            <div class="card section-card">
+                <h2 class="mb-3">Seja Curioso!</h2>
+                <p class="lead text-muted">Este painel é a sua ferramenta para explorar o universo de conhecimento que a biblioteca oferece. Use os dados abaixo para ver nossas áreas mais fortes e encontrar inspiração para sua próxima aventura intelectual.</p>
+            </div>
+        </section>
+
+        <!-- Seção de Estatísticas -->
+        <section class="mb-5">
+            <h2 class="text-center mb-4">O Acervo em Foco</h2>
+            <div class="row text-center" id="statsRow">
+                <!-- Estatísticas dinamicas serão adicionadas aqui -->
+            </div>
+        </section>
+
+        <!-- Seção do Gráfico -->
+        <section class="mb-5">
+            <h2 class="text-center mb-4">Distribuição por Área</h2>
+            <div class="card section-card">
+                <div id="chart" style="width: 100%; height: 400px;"></div>
+                <p class="text-center text-muted mt-3 mb-0">Passe o mouse sobre as seções do gráfico para ver os detalhes. Descubra a proporção de cada área de conhecimento em nosso acervo.</p>
+            </div>
+        </section>
+
+        <!-- Seção de Dicas -->
+        <section class="mb-5">
+            <h2 class="text-center mb-4">A Biblioteca é Sua!</h2>
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <div class="card tip-card h-100"><div class="card-body">
+                        <h5 class="card-title"><i class="fas fa-lightbulb me-2"></i>Estude com Tranquilidade</h5>
+                        <p class="card-text">Nossas mesas de estudo e Wi-Fi de alta velocidade estão disponíveis para garantir sua concentração e produtividade.</p>
+                    </div></div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="card tip-card h-100"><div class="card-body">
+                        <h5 class="card-title"><i class="fas fa-sync-alt me-2"></i>Gerencie Seus Empréstimos</h5>
+                        <p class="card-text">Renove seus livros facilmente através do portal do aluno, sem precisar vir ao balcão. Mantenha a leitura sempre em dia.</p>
+                    </div></div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="card tip-card h-100"><div class="card-body">
+                        <h5 class="card-title"><i class="fas fa-plus-circle me-2"></i>Ajude a Construir o Acervo</h5>
+                        <p class="card-text">Sentiu falta de algum título? Sua sugestão é valiosa! Peça o formulário no balcão e nos ajude a melhorar a biblioteca.</p>
+                    </div></div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="text-center mt-5 py-3">
+        <p class="mb-0">&copy; 2024 Sistema de Biblioteca. Uma ferramenta para explorar o conhecimento.</p>
+    </footer>
+
+    <!-- JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const chartDom = document.getElementById('chart');
+            const chart = echarts.init(chartDom);
+            
+            // Elementos da interface
+            const searchInput = document.getElementById('searchInput');
+            const searchBtn = document.getElementById('searchBtn');
+            const categoryFilter = document.getElementById('categoryFilter');
+            const showAllBtn = document.getElementById('showAllBtn');
+            const resultsSection = document.getElementById('resultsSection');
+            const welcomeSection = document.getElementById('welcomeSection');
+            const resultsTitle = document.getElementById('resultsTitle');
+            const resultsCount = document.getElementById('resultsCount');
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            const booksList = document.getElementById('booksList');
+            const pagination = document.getElementById('pagination');
+            
+            // Elementos para recomendações AI
+            const topicInput = document.getElementById('topicInput');
+            const recommendBtn = document.getElementById('recommendBtn');
+            const numRecommendations = document.getElementById('numRecommendations');
+            const recommendationsSection = document.getElementById('recommendationsSection');
+            const recommendationsTitle = document.getElementById('recommendationsTitle');
+            const recommendationsCount = document.getElementById('recommendationsCount');
+            const aiLoadingSpinner = document.getElementById('aiLoadingSpinner');
+            const recommendationsList = document.getElementById('recommendationsList');
+            
+            let currentPage = 1;
+            let currentSearch = '';
+            let currentCategory = 'all';
+            let isSearchMode = false;
+            
+            // Função para mostrar/esconder seções
+            function toggleSections(showResults, showRecommendations = false) {
+                if (showResults) {
+                    resultsSection.style.display = 'block';
+                    recommendationsSection.style.display = 'none';
+                    welcomeSection.style.display = 'none';
+                } else if (showRecommendations) {
+                    resultsSection.style.display = 'none';
+                    recommendationsSection.style.display = 'block';
+                    welcomeSection.style.display = 'none';
+                } else {
+                    resultsSection.style.display = 'none';
+                    recommendationsSection.style.display = 'none';
+                    welcomeSection.style.display = 'block';
+                }
+            }
+            
+            // Função para mostrar loading
+            function showLoading() {
+                loadingSpinner.style.display = 'block';
+                booksList.innerHTML = '';
+                pagination.innerHTML = '';
+            }
+            
+            // Função para esconder loading
+            function hideLoading() {
+                loadingSpinner.style.display = 'none';
+            }
+            
+            // Função para mostrar loading AI
+            function showAILoading() {
+                aiLoadingSpinner.style.display = 'block';
+                recommendationsList.innerHTML = '';
+            }
+            
+            // Função para esconder loading AI
+            function hideAILoading() {
+                aiLoadingSpinner.style.display = 'none';
+            }
+            
+            // Função para formatar texto
+            function formatText(text) {
+                if (!text) return 'Não informado';
+                return text.length > 100 ? text.substring(0, 100) + '...' : text;
+            }
+            
+            // Função para criar card de livro
+            function createBookCard(book) {
+                return `
+                    <div class="col-md-6 col-lg-4 mb-3">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title text-primary">${formatText(book.titulo || 'Título não informado')}</h5>
+                                ${book.sub_titulo ? `<h6 class="card-subtitle mb-2 text-muted">${formatText(book.sub_titulo)}</h6>` : ''}
+                                <p class="card-text">
+                                    <strong>Autor:</strong> ${formatText(book.autor || 'Não informado')}<br>
+                                    <strong>Editora:</strong> ${formatText(book.editora || 'Não informada')}<br>
+                                    <strong>Ano:</strong> ${book.ano || 'Não informado'}<br>
+                                    <strong>Assunto:</strong> ${formatText(book.assunto || 'Não informado')}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Função para criar paginação
+            function createPagination(currentPage, totalPages, totalResults) {
+                if (totalPages <= 1) return '';
+                
+                let paginationHtml = '<nav><ul class="pagination">';
+                
+                // Botão anterior
+                if (currentPage > 1) {
+                    paginationHtml += `<li class="page-item"><a class="page-link" href="#" data-page="${currentPage - 1}">Anterior</a></li>`;
+                }
+                
+                // Páginas
+                const startPage = Math.max(1, currentPage - 2);
+                const endPage = Math.min(totalPages, currentPage + 2);
+                
+                for (let i = startPage; i <= endPage; i++) {
+                    const activeClass = i === currentPage ? 'active' : '';
+                    paginationHtml += `<li class="page-item ${activeClass}"><a class="page-link" href="#" data-page="${i}">${i}</a></li>`;
+                }
+                
+                // Botão próximo
+                if (currentPage < totalPages) {
+                    paginationHtml += `<li class="page-item"><a class="page-link" href="#" data-page="${currentPage + 1}">Próximo</a></li>`;
+                }
+                
+                paginationHtml += '</ul></nav>';
+                return paginationHtml;
+            }
+            
+            // Função para fazer busca
+            async function performSearch() {
+                const query = searchInput.value.trim();
+                const category = categoryFilter.value;
+                
+                showLoading();
+                isSearchMode = true;
+                currentSearch = query;
+                currentCategory = category;
+                currentPage = 1;
+                
+                try {
+                    const params = new URLSearchParams();
+                    if (query) params.append('q', query);
+                    if (category !== 'all') params.append('category', category);
+                    
+                    const response = await fetch(`/api/search?${params}`);
+                    const data = await response.json();
+                    
+                    if (data.error) {
+                        throw new Error(data.error);
+                    }
+                    
+                    displayResults(data.results, data.total, 'Pesquisa');
+                    
+                } catch (error) {
+                    console.error('Erro na busca:', error);
+                    booksList.innerHTML = `
+                        <div class="col-12">
+                            <div class="alert alert-danger" role="alert">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                Erro ao realizar a busca: ${error.message}
+                            </div>
+                        </div>
+                    `;
+                } finally {
+                    hideLoading();
+                }
+            }
+            
+            // Função para carregar todos os livros
+            async function loadAllBooks(page = 1, category = 'all') {
+                showLoading();
+                isSearchMode = false;
+                currentPage = page;
+                currentCategory = category;
+                try {
+                    const params = new URLSearchParams();
+                    params.append('page', page);
+                    params.append('per_page', 20);
+                    if (category && category !== 'all') params.append('category', category);
+                    const response = await fetch(`/api/books?${params}`);
+                    const data = await response.json();
+                    if (data.error) {
+                        throw new Error(data.error);
+                    }
+                    displayResults(data.results, data.total, 'Todos os Livros', data.page, data.total_pages);
+                } catch (error) {
+                    console.error('Erro ao carregar livros:', error);
+                    booksList.innerHTML = `
+                        <div class="col-12">
+                            <div class="alert alert-danger" role="alert">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                Erro ao carregar livros: ${error.message}
+                            </div>
+                        </div>
+                    `;
+                } finally {
+                    hideLoading();
+                }
+            }
+            
+            // Função para exibir resultados
+            function displayResults(books, total, title, page = 1, totalPages = 1) {
+                toggleSections(true);
+                resultsTitle.textContent = title;
+                resultsCount.textContent = `${total} livro${total > 1 ? 's' : ''}`;
+                
+                if (books.length === 0) {
+                    booksList.innerHTML = `
+                        <div class="col-12">
+                            <div class="alert alert-info text-center" role="alert">
+                                <i class="fas fa-info-circle me-2"></i>
+                                Nenhum livro encontrado.
+                            </div>
+                        </div>
+                    `;
+                    pagination.innerHTML = '';
+                    return;
+                }
+                
+                // Exibir livros
+                booksList.innerHTML = books.map(createBookCard).join('');
+                
+                // Exibir paginação
+                pagination.innerHTML = createPagination(page, totalPages, total);
+                
+                // Adicionar event listeners para paginação
+                pagination.querySelectorAll('.page-link').forEach(link => {
+                    link.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const page = parseInt(e.target.dataset.page);
+                        if (isSearchMode) {
+                            // Para busca, recarregar com os mesmos parâmetros
+                            performSearch();
+                        } else {
+                            // Para lista completa, carregar nova página
+                            loadAllBooks(page, currentCategory);
+                        }
+                    });
+                });
+            }
+            
+            // Event listeners
+            searchBtn.addEventListener('click', performSearch);
+            showAllBtn.addEventListener('click', () => {
+                // Use the current category filter
+                const category = categoryFilter.value;
+                loadAllBooks(1, category);
+            });
+            
+            // Busca ao pressionar Enter
+            searchInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    performSearch();
+                }
+            });
+            
+            // Busca automática ao mudar categoria
+            categoryFilter.addEventListener('change', () => {
+                if (isSearchMode && currentSearch) {
+                    performSearch();
+                }
+            });
+            
+            // Função para obter recomendações AI
+            async function performRecommendations() {
+                const topic = topicInput.value.trim();
+                const numRecs = parseInt(numRecommendations.value);
+                
+                if (!topic) {
+                    alert('Por favor, digite um tópico para obter recomendações.');
+                    return;
+                }
+                
+                showAILoading();
+                
+                try {
+                    const response = await fetch('/api/recommendations', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            topic: topic,
+                            num_recommendations: numRecs
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (data.error) {
+                        throw new Error(data.error);
+                    }
+                    
+                    displayRecommendations(data.recommendations, data.topic, data.total);
+                    
+                } catch (error) {
+                    console.error('Erro ao obter recomendações:', error);
+                    recommendationsList.innerHTML = `
+                        <div class="alert alert-danger" role="alert">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            Erro ao obter recomendações: ${error.message}
+                        </div>
+                    `;
+                } finally {
+                    hideAILoading();
+                }
+            }
+            
+            // Função para exibir recomendações
+            function displayRecommendations(recommendations, topic, total) {
+                toggleSections(false, true);
+                recommendationsTitle.textContent = `Recomendações para: ${topic}`;
+                recommendationsCount.textContent = `${total} recomendações`;
+                
+                if (!recommendations || recommendations.length === 0) {
+                    recommendationsList.innerHTML = `
+                        <div class="alert alert-info text-center" role="alert">
+                            <i class="fas fa-info-circle me-2"></i>
+                            Nenhuma recomendação encontrada para este tópico.
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // Check if we have PDFs from SearXNG or fallback search links
+                const hasSearXNGPDFs = recommendations.some(rec => rec.type === 'pdf' && rec.source === 'SearXNG PDF');
+                const hasSearchLinks = recommendations.some(rec => rec.type === 'search_link');
+                
+                let statusMessage = '';
+                if (hasSearXNGPDFs) {
+                    statusMessage = `
+                        <div class="alert alert-success mb-3" role="alert">
+                            <i class="fas fa-check-circle me-2"></i>
+                            <strong>SearXNG ativo!</strong> PDFs encontrados via busca local.
+                        </div>
+                    `;
+                } else if (hasSearchLinks) {
+                    statusMessage = `
+                        <div class="alert alert-warning mb-3" role="alert">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <strong>SearXNG indisponível.</strong> Links de busca fornecidos como alternativa.
+                        </div>
+                    `;
+                }
+                
+                const recommendationsHtml = recommendations.map((rec, index) => {
+                    if (rec.type === 'library_book') {
+                        // Livro da biblioteca
+                        return `
+                            <div class="card mb-3 border-primary">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div class="flex-grow-1">
+                                            <h5 class="card-title text-primary">
+                                                <i class="fas fa-book me-2"></i>
+                                                ${index + 1}. ${rec.title || 'Título não disponível'}
+                                                <span class="badge bg-primary ms-2">Biblioteca</span>
+                                            </h5>
+                                            <p class="card-text">
+                                                <strong>Autor:</strong> ${rec.author || 'Autor não disponível'}<br>
+                                                <strong>Assunto:</strong> ${rec.subject || 'Assunto não disponível'}<br>
+                                                <strong>Fonte:</strong> ${rec.source || 'Biblioteca Local'}
+                                            </p>
+                                            <div class="alert alert-light">
+                                                <i class="fas fa-info-circle me-2"></i>
+                                                <strong>Descrição:</strong> ${rec.justification || 'Descrição não disponível'}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    } else if (rec.type === 'pdf') {
+                        // PDF from SearXNG
+                        return `
+                            <div class="card mb-3 border-danger">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div class="flex-grow-1">
+                                            <h5 class="card-title text-danger">
+                                                <i class="fas fa-file-pdf me-2"></i>
+                                                ${index + 1}. ${rec.title || 'PDF'}
+                                                <span class="badge bg-danger ms-2">PDF</span>
+                                            </h5>
+                                            <p class="card-text">
+                                                <strong>Fonte:</strong> ${rec.source || 'SearXNG PDF'}
+                                            </p>
+                                            <div class="alert alert-light">
+                                                <i class="fas fa-info-circle me-2"></i>
+                                                <strong>Descrição:</strong> ${rec.justification || 'Conteúdo extra PDF'}
+                                            </div>
+                                            ${rec.description ? `
+                                                <div class="alert alert-info small">
+                                                    <i class="fas fa-file-alt me-2"></i>
+                                                    <strong>Conteúdo:</strong> ${rec.description.substring(0, 200)}${rec.description.length > 200 ? '...' : ''}
+                                                </div>
+                                            ` : ''}
+                                            ${rec.url ? `
+                                                <a href="${rec.url}" target="_blank" class="btn btn-outline-danger btn-sm">
+                                                    <i class="fas fa-file-pdf me-1"></i>Abrir PDF
+                                                </a>
+                                            ` : ''}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    } else if (rec.type === 'search_link') {
+                        // Search link (fallback when SearXNG fails)
+                        return `
+                            <div class="card mb-3 border-warning">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div class="flex-grow-1">
+                                            <h5 class="card-title text-warning">
+                                                <i class="fas fa-search me-2"></i>
+                                                ${index + 1}. ${rec.title || 'Busca'}
+                                                <span class="badge bg-warning ms-2">Busca</span>
+                                            </h5>
+                                            <p class="card-text">
+                                                <strong>Fonte:</strong> ${rec.source || 'Motor de Busca'}
+                                            </p>
+                                            <div class="alert alert-light">
+                                                <i class="fas fa-info-circle me-2"></i>
+                                                <strong>Descrição:</strong> ${rec.justification || 'Link para buscar PDFs relacionados'}
+                                            </div>
+                                            ${rec.url ? `
+                                                <a href="${rec.url}" target="_blank" class="btn btn-outline-warning btn-sm">
+                                                    <i class="fas fa-external-link-alt me-1"></i>Abrir Busca
+                                                </a>
+                                            ` : ''}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        // Check if it's a GitHub repository or other internet resource
+                        const isGitHub = rec.source === 'GitHub' || (rec.url && rec.url.includes('github.com'));
+                        
+                        if (isGitHub) {
+                            // GitHub repository
+                            return `
+                                <div class="card mb-3 border-success">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between align-items-start">
+                                            <div class="flex-grow-1">
+                                                <h5 class="card-title text-success">
+                                                    <i class="fab fa-github me-2"></i>
+                                                    ${index + 1}. ${rec.title || 'Título não disponível'}
+                                                    <span class="badge bg-success ms-2">GitHub</span>
+                                                </h5>
+                                                <p class="card-text">
+                                                    <strong>Autor:</strong> ${rec.author || 'Autor não disponível'}<br>
+                                                    <strong>Linguagem:</strong> ${rec.subject || 'Não especificado'}<br>
+                                                    <strong>Estrelas:</strong> ⭐ ${rec.stars || 0} | <strong>Forks:</strong> 🔄 ${rec.forks || 0}<br>
+                                                    <strong>Fonte:</strong> ${rec.source || 'GitHub'}
+                                                </p>
+                                                <div class="alert alert-light">
+                                                    <i class="fas fa-info-circle me-2"></i>
+                                                    <strong>Descrição:</strong> ${rec.justification || 'Descrição não disponível'}
+                                                </div>
+                                                ${rec.url ? `
+                                                    <a href="${rec.url}" target="_blank" class="btn btn-outline-success btn-sm">
+                                                        <i class="fab fa-github me-1"></i>Ver no GitHub
+                                                    </a>
+                                                ` : ''}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        } else {
+                            // Other internet resource
+                            return `
+                                <div class="card mb-3 border-info">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between align-items-start">
+                                            <div class="flex-grow-1">
+                                                <h5 class="card-title text-info">
+                                                    <i class="fas fa-search me-2"></i>
+                                                    ${index + 1}. ${rec.title || 'Título não disponível'}
+                                                    <span class="badge bg-info ms-2">Internet</span>
+                                                </h5>
+                                                <p class="card-text">
+                                                    <strong>Autor:</strong> ${rec.author || 'Autor não disponível'}<br>
+                                                    <strong>Assunto:</strong> ${rec.subject || 'Não especificado'}<br>
+                                                    <strong>Fonte:</strong> ${rec.source || 'Internet'}
+                                                </p>
+                                                <div class="alert alert-light">
+                                                    <i class="fas fa-info-circle me-2"></i>
+                                                    <strong>Descrição:</strong> ${rec.justification || 'Descrição não disponível'}
+                                                </div>
+                                                ${rec.url ? `
+                                                    <a href="${rec.url}" target="_blank" class="btn btn-outline-info btn-sm">
+                                                        <i class="fas fa-external-link-alt me-1"></i>Abrir Link
+                                                    </a>
+                                                ` : ''}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        }
+                    }
+                }).join('');
+                
+                recommendationsList.innerHTML = statusMessage + recommendationsHtml;
+            }
+            
+            // Event listeners para recomendações AI
+            recommendBtn.addEventListener('click', performRecommendations);
+            
+            // Recomendações ao pressionar Enter
+            topicInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    performRecommendations();
+                }
+            });
+            
+            async function loadStatsAndChart() {
+                try {
+                    const response = await fetch('/api/stats');
+                    if (!response.ok) throw new Error(`Erro de comunicação: ${response.status}`);
+                    
+                    const stats = await response.json();
+                    if (stats.error) throw new Error(`Erro nos dados: ${stats.error}`);
+
+                    const animateValue = (element, start, end, duration) => {
+                        let startTimestamp = null;
+                        const step = (timestamp) => {
+                            if (!startTimestamp) startTimestamp = timestamp;
+                            const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                            element.textContent = Math.floor(progress * (end - start) + start).toLocaleString('pt-BR');
+                            if (progress < 1) window.requestAnimationFrame(step);
+                        };
+                        window.requestAnimationFrame(step);
+                    };
+
+                    animateValue(document.getElementById('total-books'), 0, stats.total || 0, 1500);
+                    animateValue(document.getElementById('ciencia-books'), 0, stats.ciencia || 0, 1500);
+                    animateValue(document.getElementById('engenharia-books'), 0, stats.engenharia || 0, 1500);
+                    animateValue(document.getElementById('software-books'), 0, stats.software || 0, 1500);
+
+                    const chartOption = {
+                        tooltip: { trigger: 'item', formatter: '{a} <br/>{b}: {c} ({d}%)' },
+                        legend: { orient: 'vertical', left: 'left', data: [
+                            'Ciências', 'Engenharia', 'Computação', 'Humanas', 'Gestão', 'Naturais', 'Saúde', 'Direito', 'Educação', 'Arquitetura', 'Tecnologia', 'Outros'] },
+                        series: [{
+                            name: 'Distribuição', type: 'pie', radius: ['45%', '70%'],
+                            avoidLabelOverlap: false,
+                            itemStyle: { borderRadius: 10, borderColor: '#fff', borderWidth: 2 },
+                            label: { show: false },
+                            emphasis: { label: { show: true, fontSize: '18', fontWeight: 'bold' } },
+                            data: [
+                                { value: stats.ciencia || 0, name: 'Ciências', itemStyle: { color: '#28a745' } },
+                                { value: stats.engenharia || 0, name: 'Engenharia', itemStyle: { color: '#ffc107' } },
+                                { value: stats.software || 0, name: 'Computação', itemStyle: { color: '#17a2b8' } },
+                                { value: stats.humanas || 0, name: 'Humanas', itemStyle: { color: '#8e44ad' } },
+                                { value: stats.gestao || 0, name: 'Gestão', itemStyle: { color: '#e67e22' } },
+                                { value: stats.naturais || 0, name: 'Naturais', itemStyle: { color: '#2ecc71' } },
+                                { value: stats.saude || 0, name: 'Saúde', itemStyle: { color: '#e74c3c' } },
+                                { value: stats.direito || 0, name: 'Direito', itemStyle: { color: '#34495e' } },
+                                { value: stats.educacao || 0, name: 'Educação', itemStyle: { color: '#f39c12' } },
+                                { value: stats.arquitetura || 0, name: 'Arquitetura', itemStyle: { color: '#b2bec3' } },
+                                { value: stats.tecnologia || 0, name: 'Tecnologia', itemStyle: { color: '#00b894' } },
+                                { value: stats.outros || 0, name: 'Outros', itemStyle: { color: '#95a5a6' } }
+                            ]
+                        }]
+                    };
+                    chart.setOption(chartOption);
+
+                    // Replace the static cards rendering in 'O Acervo em Foco' with dynamic rendering based on top_categories from stats
+                    const statsRow = document.getElementById('statsRow');
+                    statsRow.innerHTML = '';
+                    const categoryLabels = {
+                        'ciencia': 'Ciências',
+                        'engenharia': 'Engenharia',
+                        'software': 'Computação',
+                        'humanas': 'Humanas',
+                        'gestao': 'Gestão',
+                        'naturais': 'Naturais',
+                        'saude': 'Saúde',
+                        'direito': 'Direito',
+                        'educacao': 'Educação',
+                        'arquitetura': 'Arquitetura',
+                        'tecnologia': 'Tecnologia',
+                        'outros': 'Outros'
+                    };
+                    const categoryIcons = {
+                        'ciencia': 'fa-flask text-success',
+                        'engenharia': 'fa-cogs text-warning',
+                        'software': 'fa-laptop-code text-info',
+                        'humanas': 'fa-users text-secondary',
+                        'gestao': 'fa-briefcase text-primary',
+                        'naturais': 'fa-leaf text-success',
+                        'saude': 'fa-heartbeat text-danger',
+                        'direito': 'fa-balance-scale text-dark',
+                        'educacao': 'fa-chalkboard-teacher text-primary',
+                        'arquitetura': 'fa-drafting-compass text-muted',
+                        'tecnologia': 'fa-microchip text-success',
+                        'outros': 'fa-book text-muted'
+                    };
+                    statsRow.innerHTML = `
+                        <div class="col-md-3 col-6 mb-4">
+                            <div class="card stat-card h-100"><div class="card-body">
+                                <i class="fas fa-book-open fa-2x text-primary mb-2"></i>
+                                <h5 class="card-title">${stats.total}</h5>
+                                <p class="card-text">Volumes no Acervo</p>
+                            </div></div>
+                        </div>
+                    `;
+                    stats.top_categories.forEach(catObj => {
+                        const cat = catObj.category;
+                        const count = catObj.count;
+                        statsRow.innerHTML += `
+                            <div class="col-md-3 col-6 mb-4">
+                                <div class="card stat-card h-100"><div class="card-body">
+                                    <i class="fas ${categoryIcons[cat] || 'fa-book'} fa-2x mb-2"></i>
+                                    <h5 class="card-title">${count}</h5>
+                                    <p class="card-text">${categoryLabels[cat] || cat}</p>
+                                </div></div>
+                            </div>
+                        `;
+                    });
+
+                } catch (error) {
+                    console.error('Falha ao carregar dashboard:', error);
+                    const mainContainer = document.querySelector('main');
+                    mainContainer.innerHTML = `<div class="alert alert-danger text-center" role="alert"><h5><i class="fas fa-exclamation-triangle me-2"></i>Ocorreu um Erro</h5><p>Não foi possível carregar os dados do acervo. Por favor, verifique a conexão com o servidor ou tente novamente mais tarde.</p><small>Detalhe: ${error.message}</small></div>`;
+                }
+            }
+            
+            loadStatsAndChart();
+            window.addEventListener('resize', () => chart.resize());
+        });
+    </script>
+</body>
+</html> 

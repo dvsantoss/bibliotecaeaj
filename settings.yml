@@ -1,0 +1,48 @@
+general:
+  debug: false
+  instance_name: "MySearXNG"
+
+search:
+  default_engine: google
+  engines:
+    - google
+    - bing
+    - duckduckgo
+  safe_search: 0
+  autocomplete: google
+  default_lang: "pt-BR"
+
+server:
+  port: 8080
+  bind_address: "0.0.0.0"
+  secret_key: "your-secret-key-change-this"
+  base_url: false
+  image_proxy: false
+
+ui:
+  default_theme: simple
+  default_locale: "pt-BR"
+  results_on_new_tab: false
+  infinite_scroll: false
+
+redis:
+  url: false
+
+outgoing:
+  request_timeout: 3.0
+  max_request_timeout: 15.0
+  pool_connections: 100
+  pool_maxsize: 100
+  enable_http2: true
+  verify: true
+  max_redirects: 5
+  retries: 1
+  proxies:
+    http: false
+    https: false
+  using_tor_proxy: false
+  extra_proxy_timeout: true
+  local_ips_whitelist:
+    - 127.0.0.1
+    - ::1
+  useragent_suffix: ""
