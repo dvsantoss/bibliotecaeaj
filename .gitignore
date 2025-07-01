@@ -1,3 +1,61 @@
+# Ambientes virtuais
+venv/
+.env/
+*.env
+*.venv
+__pycache__/
+*.py[cod]
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Arquivos de log e temporários
+*.log
+*.tmp
+*.swp
+*.bak
+
+# Cache do Python
+__pycache__/
+*.py[cod]
+.Python
+
+# IDEs
+.vscode/
+.idea/
+
+# Arquivos de Jupyter
+.ipynb_checkpoints/
+
+# Dados sensíveis
+*.sqlite3
+*.db
+*.csv
+*.tsv
+*.json
+
+# Sistemas operacionais
+.DS_Store
+Thumbs.db
+
+# Docker
+*.pid
+
+# Arquivos do pip
+pip-log.txt
+
+# Arquivos do pytest
+htmlcov/
+.cache/
+.pytest_cache/
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
 
 
 
