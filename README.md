@@ -200,19 +200,17 @@ Para contribuir com o projeto:
 4. Teste a aplicação
 5. Envie um pull request
 
-## 📝 Licença
-
-Este projeto está sob a licença MIT. Veja o arquivo LICENSE para mais detalhes.
-
 ## 👥 Autores
 
 - Gustavo Martins e Davi Santos
 - Desenvolvido para a Biblioteca Setorial Prof. Rodolfo Helinski
 - Escola Agrícola de Jundiaí (EAJ) - Macaíba
 - Universidade Federal do Rio Grande do Norte (UFRN)
-- Gustavo Martins
-- Davi Santos
-
+- 
 ## 📞 Suporte
 
-Para dúvidas ou suporte técnico, entre em contato com a equipe da biblioteca. 
+Para dúvidas ou suporte técnico, entre em contato com a gente:
+
+davi.seabra.121@ufrn.edu.br
+ou
+gustavo.martins.119@ufrn.edu.br
